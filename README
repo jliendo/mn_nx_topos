@@ -1,0 +1,13 @@
+mn_nx_topos is a small python class definition to create networkx based mininet topologies using networkx graph generators (http://networkx.lanl.gov/reference/generators.htm). 
+
+The main idea behind this program is to reduce the time for mininet network topologies definition and go directly to the experimental usage of mininet and openflow.
+
+usage examples:
+
+sudo mn --custom mn_nx_topos.py --topo balanced_tree,r=2,h=2
+
+creates a topology where each node has to edges and the hight (depth) of the tree is of size 2
+
+sudo mn --custom mn_nx_topos.py --topo erdos_renyi,n=10,p=0.6
+
+creates a random graph (Erdos-Renyi model) of 10 nodes with a probability of 0.6 of an edge bewteen nodes (please be aware that this is a looping topology so you may need to run a spanning tree controller to avoid L2 loops in your topology)
