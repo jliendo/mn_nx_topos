@@ -90,7 +90,7 @@ class ErdosRenyi( NxTopo ):
         # super
         super(ErdosRenyi, self).__init__()
         n = kwargs.get('n', 5)
-        p = kwargs.get('p', 0.5)
+        p = kwargs.get('p', 0.8)
         # nx topology definition
         self.build_nx_topo(nx.erdos_renyi_graph(n, p))
 

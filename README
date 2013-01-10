@@ -43,4 +43,12 @@ $ sudo mn --custom mn_nx_topos.py --topo erdos_renyi,n=10,p=0.6
 Creates a random graph (Erdos-Renyi model) of 10 nodes with a probability of 0.6 
 of an edge between nodes (be aware that this is a looping topology so you may need 
 to run a spanning tree application on your controller to avoid L2 loops in your 
-network).
+network. Also be aware of your probabilities, you can get a dsconnected network.
+Wikipedia is your friend).
+
+TODO: 
+
+Many things:
+- Better graphing (interface labeling on topo edges)
+- Async displaying of graph and be able to type mininet commands at the console
+- ...
