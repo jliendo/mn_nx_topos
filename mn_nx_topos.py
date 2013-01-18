@@ -44,11 +44,14 @@ class NxTopo ( Topo ):
         # create switches and attach a host to the switch
         # one host per switch
         for n in ref_g.nodes():
+            n = n + 1
             self.addSwitch('s%d' % n)
             self.addHost('h%d' % n)
             self.addLink("s%d" % n, "h%d" % n)
         # link switches acording to topology
         for (n1, n2) in ref_g.edges():
+            n1 = n1 + 1
+            n2 = n2 + 1
             self.addLink("s%d" % n1, "s%d" % n2)
 
     def graph(self):
