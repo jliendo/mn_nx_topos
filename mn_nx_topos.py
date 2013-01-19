@@ -37,41 +37,33 @@ class NxTopo ( Topo ):
         # super
         super(NxTopo, self).__init__()
 
-    def build_nx_topo(self, ref_g):
-        """ 1 Create switches, hosts...attach host to switch acording to nx topo
-            2 Add one host to each switch (h0->s0, h1->s1, etc.)
-            3 Link switches between them"""
+    def build_nx_topo(self, g):
+        """ 
+        1) Create switches, hosts...attach host to switch acording to nx topo (self.ref_g)
+        2) Add one host to each switch (h0->s0, h1->s1, etc.)
+        3) Add edges between switches
+        """
         # create switches and attach a host to the switch
         # one host per switch
-        for n in ref_g.nodes():
+        for n in g.nodes():
             n = n + 1
             self.addSwitch('s%d' % n)
             self.addHost('h%d' % n)
             self.addLink("s%d" % n, "h%d" % n)
         # link switches acording to topology
-        for (n1, n2) in ref_g.edges():
+        for (n1, n2) in g.edges():
             n1 = n1 + 1
             n2 = n2 + 1
             self.addLink("s%d" % n1, "s%d" % n2)
 
     def graph(self):
-        """ Draws a graphical representation of the topology.
-            Switches are blue, hosts are red."""
-        pos = nx.spring_layout(self.g)
-        nodes = self.node_info
-        # switches are blue
-        nx.draw_networkx_nodes(self.g, pos, \
-                               nodelist = [x for x in nodes if nodes[x] and \
-                                          nodes[x]['isSwitch']],
-                               node_color = 'b')
-        # hosts are red
-        nx.draw_networkx_nodes(self.g, pos, \
-                               nodelist = [x for x in nodes if not nodes[x]], \
-                               node_color = 'r')
-        nx.draw_networkx_edges(self.g, pos)
-        nx.draw_networkx_labels(self.g, pos)
-        plt.show()
-
+        """ 
+        Graph function. Has to be overloaded. For graphing puproses
+        it can use self.ref_g which is mn_nx's view of the topology
+        (this view has to match mininet's view, less the hosts) or
+        it can also use self.g which is mininet's topology view
+        """
+        pass
 
 class BalancedTree( NxTopo ):
     """networkx based BalancedTree topology.
@@ -81,8 +73,23 @@ class BalancedTree( NxTopo ):
         super(BalancedTree, self).__init__()
         r = kwargs.get('r', 2)
         h = kwargs.get('h', 2)
+        # mn_nx's topology view of the network
+        self.ref_g = nx.balanced_tree(r,h)
         # nx topology definition
-        self.build_nx_topo(nx.balanced_tree(r, h))
+        self.build_nx_topo(self.ref_g)
+
+    def graph(self):
+        """
+        Overloaded graph function to draw a hierachical view of
+        tree-like topologies. Switches are red and there are no
+        hosts on the graph. 
+        In reality (mininet virtual network) there exists a host 
+        for each switch in the topology with a name that starts 
+        with 'hn' where 'n' is the switch number.
+        """
+        pos = nx.graphviz_layout(self.ref_g, prog='dot')
+        nx.draw(self.ref_g, pos)
+        plt.show()
 
 
 class ErdosRenyi( NxTopo ):
@@ -94,8 +101,15 @@ class ErdosRenyi( NxTopo ):
         super(ErdosRenyi, self).__init__()
         n = kwargs.get('n', 5)
         p = kwargs.get('p', 0.8)
+        # topology view of the network
+        self.ref_g = nx.erdos_renyi_graph(n,p)
         # nx topology definition
-        self.build_nx_topo(nx.erdos_renyi_graph(n, p))
+        self.build_nx_topo(self.ref_g)
+
+    def graph(self):
+        pos = nx.circular_layout(self.ref_g)
+        nx.draw(self.ref_g, pos)
+        plt.show()
 
 
 topos = { 'balanced_tree': (lambda **args: BalancedTree(**args)),
